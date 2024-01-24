@@ -1,0 +1,6 @@
+database:
+  host: postgres
+  port: 5432
+  user: user
+  pass: pass
+  name: test
