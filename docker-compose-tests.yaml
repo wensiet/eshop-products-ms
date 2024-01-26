@@ -1,0 +1,22 @@
+version: '3'
+services:
+  postgres-test:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: test
+    logging:
+      driver: none
+  redis-test:
+    image: redis:latest
+    command: redis-server --requirepass pass
+    logging:
+      driver: none
+  core-test:
+    build:
+      context: .
+      dockerfile: ./tests/Dockerfile
+    depends_on:
+      - postgres-test
+      - redis-test

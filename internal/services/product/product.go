@@ -10,21 +10,7 @@ import (
 type ProductStorage interface {
 	SaveProduct(title string, price float64, quantity int, description string) (uint, error)
 	Product(id string) (models.Product, error)
-}
-
-type ImageStorage interface {
-	SaveImage(s3Path string, product models.Product, order int) error
-	Images(productID string) ([]models.Image, error)
-}
-
-type Product struct {
-	log            *slog.Logger
-	productStorage ProductStorage
-	imageStorage   ImageStorage
-}
-
-func New(log *slog.Logger, productStorage ProductStorage, imageStorage ImageStorage) *Product {
-	return &Product{log: log, productStorage: productStorage, imageStorage: imageStorage}
+	ManyProducts(limit, offset int) ([]models.Product, error)
 }
 
 func (p Product) CreateProduct(title string, price float64, quantity int, description string) (uint, error) {
@@ -56,33 +42,6 @@ func (p Product) CreateProduct(title string, price float64, quantity int, descri
 	return productID, nil
 }
 
-func (p Product) AddImage(s3Path string, productID string) error {
-	const op = "productService.Product.UpdateProduct"
-
-	log := p.log.With(
-		slog.String("op", op),
-	)
-
-	log.Info("adding image")
-
-	product, err := p.GetProductByID(productID)
-	if err != nil {
-		return fmt.Errorf("%s: %w", op, err)
-	}
-
-	images, err := p.imageStorage.Images(productID)
-	if err != nil {
-		return fmt.Errorf("%s: %w", op, err)
-	}
-
-	err = p.imageStorage.SaveImage(s3Path, product, len(images)+1)
-	if err != nil {
-		return fmt.Errorf("%s: %w", op, err)
-	}
-
-	return nil
-}
-
 func (p Product) GetProductByID(id string) (models.Product, error) {
 	const op = "productService.Product.GetProductByID"
 
@@ -97,4 +56,32 @@ func (p Product) GetProductByID(id string) (models.Product, error) {
 		return models.Product{}, fmt.Errorf("%s: %w", op, appError.ProductNotFound)
 	}
 	return product, nil
+}
+
+func (p Product) GetProductsWithPaging(page int, pageSize ...int) ([]models.Product, error) {
+	const op = "productService.Product.GetProductsWithPaging"
+	const defaultPageSize = 10
+
+	var pSize int
+	if len(pageSize) == 0 {
+		pSize = defaultPageSize
+	} else {
+		if pageSize[0] <= 0 {
+			pSize = defaultPageSize
+		} else {
+			pSize = pageSize[0]
+		}
+	}
+
+	log := p.log.With(
+		slog.String("op", op),
+	)
+
+	log.Info("getting products")
+
+	products, err := p.productStorage.ManyProducts(pSize, (page-1)*pSize)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+	return products, nil
 }

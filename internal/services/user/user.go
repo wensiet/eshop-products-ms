@@ -6,7 +6,7 @@ import (
 	"eshop-products-ms/internal/config"
 	models "eshop-products-ms/internal/models/product"
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v5"
 	"log/slog"
 	"time"
 )
@@ -14,11 +14,6 @@ import (
 type UserStorage interface {
 	SaveUser(authID uint) (uint, error)
 	User(id uint) (models.User, error)
-}
-
-type User struct {
-	log         *slog.Logger
-	userStorage UserStorage
 }
 
 func (u User) DecodeJWT(JWT string) (models.User, error) {

@@ -7,6 +7,7 @@ import (
 )
 
 type Config struct {
+	Env      string `yaml:"env" env-required:"true"`
 	Database struct {
 		Host string `yaml:"host" env-required:"true"`
 		Port string `yaml:"port" env-required:"true"`
@@ -18,6 +19,15 @@ type Config struct {
 		Secret string `yaml:"secret" env-required:"true"`
 		TTL    string `yaml:"ttl" env-required:"true"`
 	}
+	GRPC struct {
+		Port int `yaml:"port" env-required:"true"`
+	}
+	Redis struct {
+		Host string `yaml:"host" env-required:"true"`
+		Port string `yaml:"port" env-required:"true"`
+		Pass string `yaml:"pass" env-required:"true"`
+		DB   int    `yaml:"db" env-default:"0"`
+	} `yaml:"redis"`
 }
 
 var once sync.Once

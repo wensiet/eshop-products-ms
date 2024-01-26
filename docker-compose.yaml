@@ -1,12 +1,38 @@
 version: '3'
 services:
+  products-ms:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "9090:9090"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - eshop
   postgres:
     image: postgres:latest
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: test
-    ports:
-      - "5432:5432"
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
+    networks:
+      - eshop
+    ports:
+      - "5432"
+  redis:
+    image: redis:latest
+    command: redis-server --requirepass pass
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis-data:/data
+    networks:
+      - eshop
+
+networks:
+  eshop:
+    external: true

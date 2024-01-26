@@ -1,6 +1,6 @@
 env: local
 database:
-  host: postgres
+  host: postgres-test
   port: 5432
   user: user
   pass: pass
@@ -11,7 +11,7 @@ jwt:
 grpc:
   port: 9090
 redis:
-  host: redis
+  host: redis-test
   port: 6379
   pass: pass
   db: 0
