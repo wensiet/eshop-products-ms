@@ -1,6 +1,8 @@
 package postgres
 
-import models "eshop-products-ms/internal/models/product"
+import (
+	models "eshop-products-ms/internal/models/product"
+)
 
 func (s Storage) SaveProduct(title string, price float64, quantity int, description string) (uint, error) {
 	product := models.Product{Title: title, Price: price, Quantity: quantity, Description: description}
@@ -24,15 +26,6 @@ func (s Storage) Product(id string) (models.Product, error) {
 	err = s.Redis.CacheProduct(product)
 	return product, nil
 }
-
-//func (s Storage) ManyProducts(limit, offset int) ([]models.Product, error) {
-//	var products []models.Product
-//	err := s.DB.Limit(limit).Offset(offset).Find(&products).Error
-//	if err != nil {
-//		return nil, err
-//	}
-//	return products, nil
-//}
 
 func (s Storage) ManyProducts(limit, offset int) ([]models.Product, error) {
 	var products []models.Product

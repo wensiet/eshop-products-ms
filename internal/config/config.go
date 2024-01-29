@@ -2,6 +2,8 @@ package config
 
 import (
 	"github.com/ilyakaznacheev/cleanenv"
+	"github.com/wensiet/logmod"
+	"log/slog"
 	"os"
 	"sync"
 )
@@ -57,4 +59,19 @@ func mustLoad() {
 func Get() Config {
 	once.Do(mustLoad)
 	return config
+}
+
+func GetLogger() *slog.Logger {
+	conf := Get()
+	return logmod.New(logmod.Options{
+		Env:     conf.Env,
+		Service: "eshop-products-ms",
+		Loki: struct {
+			Host string
+			Port int
+		}{
+			Host: conf.Loki.Host,
+			Port: conf.Loki.Port,
+		},
+	})
 }

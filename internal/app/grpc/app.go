@@ -6,6 +6,7 @@ import (
 	productService "eshop-products-ms/internal/services/product"
 	userService "eshop-products-ms/internal/services/user"
 	"fmt"
+	"github.com/getsentry/sentry-go"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/recovery"
 	"google.golang.org/grpc"
@@ -35,9 +36,14 @@ func New(log *slog.Logger, productsServ productService.Product, usersServ userSe
 	}
 
 	recoveryOpts := []recovery.Option{
-		recovery.WithRecoveryHandler(func(p interface{}) (err error) {
+		recovery.WithRecoveryHandler(func(p any) (err error) {
 			log.Error("Recovered from panic", slog.Any("panic", p))
-
+			if e, ok := p.(error); ok {
+				sentry.CaptureException(e)
+				return status.Errorf(codes.Internal, "internal error")
+			}
+			genericError := fmt.Errorf("unable to get error, panic: %v", p)
+			sentry.CaptureException(genericError)
 			return status.Errorf(codes.Internal, "internal error")
 		}),
 	}
@@ -45,6 +51,7 @@ func New(log *slog.Logger, productsServ productService.Product, usersServ userSe
 	grpcAppServer := grpc.NewServer(grpc.ChainUnaryInterceptor(
 		recovery.UnaryServerInterceptor(recoveryOpts...),
 		logging.UnaryServerInterceptor(InterceptorLogger(log), loggingOpts...),
+		//productsAPI.CorsLikeInterceptor,
 	))
 
 	productsAPI.Register(grpcAppServer, productsServ, usersServ)

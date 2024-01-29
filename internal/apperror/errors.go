@@ -2,6 +2,7 @@ package appError
 
 import (
 	"errors"
+	"github.com/getsentry/sentry-go"
 	"log/slog"
 )
 
@@ -40,6 +41,7 @@ func init() {
 
 func LogIfNotApp(err error, logger *slog.Logger) {
 	if !errorsMap[err] {
+		sentry.CaptureException(err)
 		logger.Error(err.Error())
 	}
 }

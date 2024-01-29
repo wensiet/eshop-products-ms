@@ -7,7 +7,7 @@ import (
 	productService2 "eshop-products-ms/internal/services/product"
 	userService2 "eshop-products-ms/internal/services/user"
 	"eshop-products-ms/internal/storage/postgres"
-	"github.com/wensiet/logmod"
+	"github.com/getsentry/sentry-go"
 	"log/slog"
 )
 
@@ -20,19 +20,18 @@ var conf config.Config
 func init() {
 	conf = config.Get()
 
-	logger = logmod.New(logmod.Options{
-		Env:     conf.Env,
-		Service: "eshop-products-ms",
-		Loki: struct {
-			Host string
-			Port int
-		}{
-			Host: conf.Loki.Host,
-			Port: conf.Loki.Port,
-		},
+	logger = config.GetLogger()
+
+	err := sentry.Init(sentry.ClientOptions{
+		Dsn:              "https://56d8e39d5f2248010f851a6e23cf3dd2@o4506655030378496.ingest.sentry.io/4506655062753280",
+		EnableTracing:    true,
+		TracesSampleRate: 1.0,
 	})
 
-	var err error
+	if err != nil {
+		logger.Error("failed to init sentry %s", err)
+	}
+
 	storage, err = postgres.NewConnection()
 	if err != nil {
 		panic(err)

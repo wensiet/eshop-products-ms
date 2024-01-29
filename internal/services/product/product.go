@@ -1,9 +1,11 @@
 package productService
 
 import (
+	"context"
 	appError "eshop-products-ms/internal/apperror"
 	models "eshop-products-ms/internal/models/product"
 	"fmt"
+	"github.com/getsentry/sentry-go"
 	"log/slog"
 )
 
@@ -15,6 +17,9 @@ type ProductStorage interface {
 
 func (p Product) CreateProduct(title string, price float64, quantity int, description string) (uint, error) {
 	const op = "productService.Product.CreateProduct"
+
+	transaction := sentry.StartTransaction(context.Background(), op)
+	defer transaction.Finish()
 
 	log := p.log.With(
 		slog.String("op", op),
@@ -46,6 +51,9 @@ func (p Product) CreateProduct(title string, price float64, quantity int, descri
 func (p Product) GetProductByID(id string) (models.Product, error) {
 	const op = "productService.Product.GetProductByID"
 
+	transaction := sentry.StartTransaction(context.Background(), op)
+	defer transaction.Finish()
+
 	log := p.log.With(
 		slog.String("op", op),
 	)
@@ -54,14 +62,20 @@ func (p Product) GetProductByID(id string) (models.Product, error) {
 
 	product, err := p.productStorage.Product(id)
 	if err != nil {
+
 		appError.LogIfNotApp(err, p.log)
 		return models.Product{}, fmt.Errorf("%s: %w", op, appError.ProductNotFound)
 	}
+
 	return product, nil
 }
 
 func (p Product) GetProductsWithPaging(page int, pageSize ...int) ([]models.Product, error) {
 	const op = "productService.Product.GetProductsWithPaging"
+
+	transaction := sentry.StartTransaction(context.Background(), op)
+	defer transaction.Finish()
+
 	const defaultPageSize = 10
 
 	var pSize int
@@ -80,7 +94,6 @@ func (p Product) GetProductsWithPaging(page int, pageSize ...int) ([]models.Prod
 	)
 
 	log.Info("getting products")
-
 	products, err := p.productStorage.ManyProducts(pSize, (page-1)*pSize)
 	if err != nil {
 		appError.LogIfNotApp(err, p.log)
