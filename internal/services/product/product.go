@@ -36,6 +36,7 @@ func (p Product) CreateProduct(title string, price float64, quantity int, descri
 
 	productID, err := p.productStorage.SaveProduct(title, price, quantity, description)
 	if err != nil {
+		appError.LogIfNotApp(err, p.log)
 		return 0, fmt.Errorf("%s: %w", op, err)
 	}
 
@@ -53,6 +54,7 @@ func (p Product) GetProductByID(id string) (models.Product, error) {
 
 	product, err := p.productStorage.Product(id)
 	if err != nil {
+		appError.LogIfNotApp(err, p.log)
 		return models.Product{}, fmt.Errorf("%s: %w", op, appError.ProductNotFound)
 	}
 	return product, nil
@@ -81,6 +83,7 @@ func (p Product) GetProductsWithPaging(page int, pageSize ...int) ([]models.Prod
 
 	products, err := p.productStorage.ManyProducts(pSize, (page-1)*pSize)
 	if err != nil {
+		appError.LogIfNotApp(err, p.log)
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	return products, nil

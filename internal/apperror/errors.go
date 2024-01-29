@@ -1,6 +1,9 @@
 package appError
 
-import "errors"
+import (
+	"errors"
+	"log/slog"
+)
 
 var (
 	InvalidTitle    = errors.New("empty file")
@@ -22,3 +25,21 @@ var (
 var (
 	Unauthorized = errors.New("unauthorized")
 )
+
+var errorsMap map[error]bool
+
+func init() {
+	errorsMap = map[error]bool{
+		InvalidMetadata: true,
+		Unauthorized:    true,
+		UserNotFound:    true,
+		ExpiredToken:    true,
+		InvalidToken:    true,
+	}
+}
+
+func LogIfNotApp(err error, logger *slog.Logger) {
+	if !errorsMap[err] {
+		logger.Error(err.Error())
+	}
+}

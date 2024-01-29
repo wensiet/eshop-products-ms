@@ -7,8 +7,8 @@ import (
 	productService2 "eshop-products-ms/internal/services/product"
 	userService2 "eshop-products-ms/internal/services/user"
 	"eshop-products-ms/internal/storage/postgres"
+	"github.com/wensiet/logmod"
 	"log/slog"
-	"os"
 )
 
 var storage *postgres.Storage
@@ -20,23 +20,17 @@ var conf config.Config
 func init() {
 	conf = config.Get()
 
-	switch conf.Env {
-	case "local":
-		logger = slog.New(slog.NewTextHandler(
-			os.Stdout,
-			&slog.HandlerOptions{Level: slog.LevelDebug}),
-		)
-	case "production":
-		logger = slog.New(slog.NewJSONHandler(
-			os.Stdout,
-			&slog.HandlerOptions{Level: slog.LevelInfo}),
-		)
-	case "test":
-		logger = slog.New(slog.NewTextHandler(
-			os.Stdout,
-			&slog.HandlerOptions{Level: slog.LevelDebug}),
-		)
-	}
+	logger = logmod.New(logmod.Options{
+		Env:     conf.Env,
+		Service: "eshop-products-ms",
+		Loki: struct {
+			Host string
+			Port int
+		}{
+			Host: conf.Loki.Host,
+			Port: conf.Loki.Port,
+		},
+	})
 
 	var err error
 	storage, err = postgres.NewConnection()

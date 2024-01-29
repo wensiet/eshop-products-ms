@@ -28,6 +28,10 @@ type Config struct {
 		Pass string `yaml:"pass" env-required:"true"`
 		DB   int    `yaml:"db" env-default:"0"`
 	} `yaml:"redis"`
+	Loki struct {
+		Host string `yaml:"host" env-required:"true"`
+		Port int    `yaml:"port" env-required:"true"`
+	} `yaml:"loki"`
 }
 
 var once sync.Once

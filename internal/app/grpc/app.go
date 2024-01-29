@@ -59,7 +59,7 @@ func (a *App) Run() error {
 	if err != nil {
 		return fmt.Errorf("%s: %w", op, err)
 	}
-	a.log.Info("grpc server is listening", slog.String("address", l.Addr().String()))
+	a.log.Info("grpc server is listening")
 
 	err = a.gRPCServer.Serve(l)
 	if err != nil {
