@@ -27,6 +27,7 @@ type ProductServClient interface {
 	CreateProduct(ctx context.Context, in *CreateProductRequest, opts ...grpc.CallOption) (*CreateProductResponse, error)
 	UpdateProduct(ctx context.Context, in *UpdateProductRequest, opts ...grpc.CallOption) (*Product, error)
 	DeleteProduct(ctx context.Context, in *DeleteProductRequest, opts ...grpc.CallOption) (*DeleteProductResponse, error)
+	ProceedOrder(ctx context.Context, in *ProceedOrderRequest, opts ...grpc.CallOption) (*ProceedOrderResponse, error)
 }
 
 type productServClient struct {
@@ -82,6 +83,15 @@ func (c *productServClient) DeleteProduct(ctx context.Context, in *DeleteProduct
 	return out, nil
 }
 
+func (c *productServClient) ProceedOrder(ctx context.Context, in *ProceedOrderRequest, opts ...grpc.CallOption) (*ProceedOrderResponse, error) {
+	out := new(ProceedOrderResponse)
+	err := c.cc.Invoke(ctx, "/product.ProductServ/ProceedOrder", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProductServServer is the server API for ProductServ service.
 // All implementations must embed UnimplementedProductServServer
 // for forward compatibility
@@ -91,6 +101,7 @@ type ProductServServer interface {
 	CreateProduct(context.Context, *CreateProductRequest) (*CreateProductResponse, error)
 	UpdateProduct(context.Context, *UpdateProductRequest) (*Product, error)
 	DeleteProduct(context.Context, *DeleteProductRequest) (*DeleteProductResponse, error)
+	ProceedOrder(context.Context, *ProceedOrderRequest) (*ProceedOrderResponse, error)
 	mustEmbedUnimplementedProductServServer()
 }
 
@@ -112,6 +123,9 @@ func (UnimplementedProductServServer) UpdateProduct(context.Context, *UpdateProd
 }
 func (UnimplementedProductServServer) DeleteProduct(context.Context, *DeleteProductRequest) (*DeleteProductResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteProduct not implemented")
+}
+func (UnimplementedProductServServer) ProceedOrder(context.Context, *ProceedOrderRequest) (*ProceedOrderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProceedOrder not implemented")
 }
 func (UnimplementedProductServServer) mustEmbedUnimplementedProductServServer() {}
 
@@ -216,6 +230,24 @@ func _ProductServ_DeleteProduct_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ProductServ_ProceedOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProceedOrderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProductServServer).ProceedOrder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/product.ProductServ/ProceedOrder",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProductServServer).ProceedOrder(ctx, req.(*ProceedOrderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ProductServ_ServiceDesc is the grpc.ServiceDesc for ProductServ service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -242,6 +274,10 @@ var ProductServ_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteProduct",
 			Handler:    _ProductServ_DeleteProduct_Handler,
+		},
+		{
+			MethodName: "ProceedOrder",
+			Handler:    _ProductServ_ProceedOrder_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

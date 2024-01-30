@@ -1,4 +1,4 @@
-package postgres
+package storage
 
 import (
 	models "eshop-products-ms/internal/models/product"
@@ -6,7 +6,7 @@ import (
 
 func (s Storage) SaveProduct(title string, price float64, quantity int, description string) (uint, error) {
 	product := models.Product{Title: title, Price: price, Quantity: quantity, Description: description}
-	err := s.DB.Save(&product).Error
+	err := s.Postgres.DB.Save(&product).Error
 	if err != nil {
 		return 0, err
 	}
@@ -19,7 +19,7 @@ func (s Storage) Product(id string) (models.Product, error) {
 		return cached, nil
 	}
 	var product models.Product
-	err = s.DB.First(&product, id).Error
+	err = s.Postgres.DB.First(&product, id).Error
 	if err != nil {
 		return models.Product{}, err
 	}
@@ -29,9 +29,18 @@ func (s Storage) Product(id string) (models.Product, error) {
 
 func (s Storage) ManyProducts(limit, offset int) ([]models.Product, error) {
 	var products []models.Product
-	err := s.DB.Limit(limit).Offset(offset).Find(&products).Error
+	err := s.Postgres.DB.Limit(limit).Offset(offset).Find(&products).Error
 	if err != nil {
 		return nil, err
 	}
 	return products, nil
+}
+
+func (s Storage) UpdateProduct(product models.Product) error {
+	// TODO FIX
+	err := s.Postgres.DB.Save(&product).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }

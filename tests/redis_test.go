@@ -37,7 +37,7 @@ func TestInitProductFixture(t *testing.T) {
 }
 
 func TestRedisConnection(t *testing.T) {
-	conn, err := myRedis.NewConnection()
+	conn, err := myRedis.New()
 	assert.NoError(t, err, "Failed to initialize Redis client")
 
 	redisTestsFixtures.RedisClientFixture.Passed = true

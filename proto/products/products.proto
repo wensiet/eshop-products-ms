@@ -10,6 +10,7 @@ service ProductServ {
   rpc CreateProduct(CreateProductRequest) returns (CreateProductResponse);
   rpc UpdateProduct(UpdateProductRequest) returns (Product);
   rpc DeleteProduct(DeleteProductRequest) returns (DeleteProductResponse);
+  rpc ProceedOrder(ProceedOrderRequest) returns (ProceedOrderResponse);
 }
 
 message Product {
@@ -66,4 +67,14 @@ message DeleteProductRequest {
 
 message DeleteProductResponse {
   string id = 1;
+}
+
+message ProceedOrderRequest {
+  string id = 1;
+  int32 quantity = 2;
+}
+
+message ProceedOrderResponse {
+  string id = 1;
+  int32 quantity = 2;
 }

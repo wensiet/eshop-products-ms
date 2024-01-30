@@ -1,4 +1,4 @@
-package postgres
+package storage
 
 import models "eshop-products-ms/internal/models/product"
 

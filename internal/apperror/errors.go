@@ -27,15 +27,24 @@ var (
 	Unauthorized = errors.New("unauthorized")
 )
 
+var (
+	NotEnoughProducts = errors.New("not enough products")
+)
+
 var errorsMap map[error]bool
 
 func init() {
 	errorsMap = map[error]bool{
-		InvalidMetadata: true,
-		Unauthorized:    true,
-		UserNotFound:    true,
-		ExpiredToken:    true,
-		InvalidToken:    true,
+		InvalidMetadata:   true,
+		Unauthorized:      true,
+		UserNotFound:      true,
+		ExpiredToken:      true,
+		InvalidToken:      true,
+		InvalidTitle:      true,
+		InvalidPrice:      true,
+		InvalidQuantity:   true,
+		ProductNotFound:   true,
+		NotEnoughProducts: true,
 	}
 }
 

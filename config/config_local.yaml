@@ -1,15 +1,12 @@
 env: local
+grpc:
+  port: 9090
 database:
   host: localhost
   port: 5432
   user: user
   pass: pass
   name: test
-jwt:
-  secret: secret
-  ttl: 3600
-grpc:
-  port: 9090
 redis:
   host: localhost
   port: 6379
@@ -18,3 +15,13 @@ redis:
 loki:
   host: localhost
   port: 3100
+minio:
+  host: localhost
+  port: 9000
+  access_key: username
+  secret_key: password
+  use_ssl: false
+  bucket: products
+jwt:
+  secret: secret
+  ttl: 3600

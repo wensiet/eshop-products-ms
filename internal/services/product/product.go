@@ -13,6 +13,7 @@ type ProductStorage interface {
 	SaveProduct(title string, price float64, quantity int, description string) (uint, error)
 	Product(id string) (models.Product, error)
 	ManyProducts(limit, offset int) ([]models.Product, error)
+	UpdateProduct(product models.Product) error
 }
 
 func (p Product) CreateProduct(title string, price float64, quantity int, description string) (uint, error) {
@@ -100,4 +101,32 @@ func (p Product) GetProductsWithPaging(page int, pageSize ...int) ([]models.Prod
 		return nil, fmt.Errorf("%s: %w", op, err)
 	}
 	return products, nil
+}
+
+func (p Product) ProceedOrder(productID string, quantity int32) error {
+	const op = "productService.Product.ProceedOrder"
+
+	transaction := sentry.StartTransaction(context.Background(), op)
+	defer transaction.Finish()
+
+	product, err := p.productStorage.Product(productID)
+	if err != nil {
+		appError.LogIfNotApp(err, p.log)
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	newQuantity := product.Quantity - int(quantity)
+	if newQuantity < 0 {
+		return fmt.Errorf("%s: %w", op, appError.NotEnoughProducts)
+	}
+
+	product.Quantity = newQuantity
+
+	err = p.productStorage.UpdateProduct(product)
+	if err != nil {
+		appError.LogIfNotApp(err, p.log)
+		return fmt.Errorf("%s: %w", op, err)
+	}
+
+	return nil
 }

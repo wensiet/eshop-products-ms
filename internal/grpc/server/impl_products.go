@@ -74,3 +74,20 @@ func (s *productsAPI) UpdateProduct(ctx context.Context, in *productv1.UpdatePro
 func (s *productsAPI) DeleteProduct(ctx context.Context, in *productv1.DeleteProductRequest) (*productv1.DeleteProductResponse, error) {
 	return nil, nil
 }
+
+func (s *productsAPI) ProceedOrder(ctx context.Context, in *productv1.ProceedOrderRequest) (*productv1.ProceedOrderResponse, error) {
+	err := s.productService.ProceedOrder(in.Id, in.Quantity)
+	if err != nil {
+		if errors.Is(err, appError.ProductNotFound) {
+			return nil, status.Error(codes.NotFound, "product not found")
+		}
+		if errors.Is(err, appError.NotEnoughProducts) {
+			return nil, status.Error(codes.InvalidArgument, "not enough quantity")
+		}
+		return nil, status.Error(codes.Internal, "internal error occurred")
+	}
+	return &productv1.ProceedOrderResponse{
+		Id:       in.Id,
+		Quantity: in.Quantity,
+	}, nil
+}

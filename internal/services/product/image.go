@@ -1,18 +1,19 @@
 package productService
 
 import (
+	appError "eshop-products-ms/internal/apperror"
 	models "eshop-products-ms/internal/models/product"
 	"fmt"
 	"log/slog"
 )
 
 type ImageStorage interface {
-	SaveImage(s3Path string, product models.Product, order int) error
+	SaveImage(image []byte, s3Path string, product models.Product, order int) (string, error)
 	Images(productID string) ([]models.Image, error)
 }
 
-func (p Product) AddImage(s3Path string, productID string) error {
-	const op = "productService.Product.UpdateProduct"
+func (p Product) AddImage(image []byte, imageName string, productID string) (string, error) {
+	const op = "productService.Product.AddImage"
 
 	log := p.log.With(
 		slog.String("op", op),
@@ -22,18 +23,54 @@ func (p Product) AddImage(s3Path string, productID string) error {
 
 	product, err := p.GetProductByID(productID)
 	if err != nil {
-		return fmt.Errorf("%s: %w", op, err)
+		appError.LogIfNotApp(err, log)
+		return "", fmt.Errorf("%s: %w", op, err)
 	}
 
 	images, err := p.imageStorage.Images(productID)
 	if err != nil {
-		return fmt.Errorf("%s: %w", op, err)
+		appError.LogIfNotApp(err, log)
+		return "", fmt.Errorf("%s: %w", op, err)
 	}
 
-	err = p.imageStorage.SaveImage(s3Path, product, len(images)+1)
+	s3Path := fmt.Sprintf("%s_%s_%d.png", imageName, productID, len(images)+1)
+
+	filename, err := p.imageStorage.SaveImage(image, s3Path, product, len(images)+1)
 	if err != nil {
-		return fmt.Errorf("%s: %w", op, err)
+		appError.LogIfNotApp(err, log)
+		return "", fmt.Errorf("%s: %w", op, err)
 	}
 
-	return nil
+	log.With("image", filename).Info("image added")
+
+	return filename, nil
+}
+
+func (p Product) GetImages(productID string) ([]string, error) {
+	const op = "productService.Product.GetImages"
+
+	log := p.log.With(
+		"op", op,
+	)
+
+	log.Info("getting images")
+
+	_, err := p.productStorage.Product(productID)
+	if err != nil {
+		appError.LogIfNotApp(err, log)
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	images, err := p.imageStorage.Images(productID)
+	if err != nil {
+		appError.LogIfNotApp(err, log)
+		return nil, fmt.Errorf("%s: %w", op, err)
+	}
+
+	var filenames []string
+	for _, image := range images {
+		filenames = append(filenames, image.S3Path)
+	}
+
+	return filenames, nil
 }

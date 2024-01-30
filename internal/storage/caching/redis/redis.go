@@ -10,7 +10,7 @@ type Redis struct {
 	client *redis.Client
 }
 
-func NewConnection() (*Redis, error) {
+func New() (*Redis, error) {
 	conf := config.Get()
 	client := redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%s", conf.Redis.Host, conf.Redis.Port),

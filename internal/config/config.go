@@ -20,10 +20,10 @@ type Config struct {
 	JWT struct {
 		Secret string `yaml:"secret" env-required:"true"`
 		TTL    string `yaml:"ttl" env-required:"true"`
-	}
+	} `yaml:"jwt"`
 	GRPC struct {
 		Port int `yaml:"port" env-required:"true"`
-	}
+	} `yaml:"grpc"`
 	Redis struct {
 		Host string `yaml:"host" env-required:"true"`
 		Port string `yaml:"port" env-required:"true"`
@@ -34,6 +34,14 @@ type Config struct {
 		Host string `yaml:"host" env-required:"true"`
 		Port int    `yaml:"port" env-required:"true"`
 	} `yaml:"loki"`
+	MinIO struct {
+		Host      string `yaml:"host" env-required:"true"`
+		Port      int    `yaml:"port" env-required:"true"`
+		AccessKey string `yaml:"access_key" env-required:"access_key"`
+		SecretKey string `yaml:"secret_key" env-required:"true"`
+		SSLMode   bool   `yaml:"use_ssl" env-default:"false"`
+		Bucket    string `yaml:"bucket" env-required:"true"`
+	} `yaml:"minio"`
 }
 
 var once sync.Once

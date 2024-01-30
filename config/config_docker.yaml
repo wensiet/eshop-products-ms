@@ -18,3 +18,10 @@ redis:
 loki:
   host: loki
   port: 3100
+minio:
+  host: minio
+  port: 9000
+  access_key: username
+  secret_key: password
+  use_ssl: false
+  bucket: products
