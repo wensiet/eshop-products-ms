@@ -17,3 +17,5 @@ spec:
           image: registry.gitlab.com/e-com-shop/backend/eshop-products-ms:latest
           ports:
             - containerPort: 9090
+      imagePullSecrets:
+        - name: gitlab

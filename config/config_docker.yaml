@@ -16,7 +16,7 @@ redis:
   pass: pass
   db: 0
 loki:
-  host: loki
+  host: 213.226.125.222
   port: 3100
 minio:
   host: 213.226.125.222
