@@ -10,7 +10,7 @@ lint-test-job:
   script:
     - echo "Started linting."
     - golangci-lint run
-    - echo "Linting finished"
+    - echo "Linting finished."
 
 build-job:
   tags:
