@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Config
+clusters:
+- name: "friendly-amalthea-972e01"
+  cluster:
+    server: "https://k8saas2.timeweb.com/k8s/clusters/c-8hsv6"
+
+users:
+- name: "friendly-amalthea-972e01"
+  user:
+    token: "kubeconfig-u-7txs7jzkld:72jlqq9btj8rzl5q2hs948r2bt6stz886qf9kg4qkj5msb58wtjhgv"
+
+
+contexts:
+- name: "friendly-amalthea-972e01"
+  context:
+    user: "friendly-amalthea-972e01"
+    cluster: "friendly-amalthea-972e01"
+
+current-context: "friendly-amalthea-972e01"
