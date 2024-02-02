@@ -8,9 +8,8 @@ service ProductServ {
   rpc GetProduct(GetProductRequest) returns (Product);
   rpc GetProducts(GetProductsRequest) returns (GetProductsResponse);
   rpc CreateProduct(CreateProductRequest) returns (CreateProductResponse);
-  rpc UpdateProduct(UpdateProductRequest) returns (Product);
-  rpc DeleteProduct(DeleteProductRequest) returns (DeleteProductResponse);
-  rpc ProceedOrder(ProceedOrderRequest) returns (ProceedOrderResponse);
+  rpc BeginOrder(BeginOrderRequest) returns (BeginOrderResponse);
+  rpc ApplyOrder(ApplyOrderRequest) returns (ApplyOrderResponse);
 }
 
 message Product {
@@ -50,31 +49,20 @@ message CreateProductResponse {
   string id = 1;
 }
 
-message UpdateProductRequest {
-  string id = 1;
-  string name = 2;
-  string description = 3;
-  float price = 4;
-}
-
-message UpdateProductResponse {
-  Product product = 1;
-}
-
-message DeleteProductRequest {
-  string id = 1;
-}
-
-message DeleteProductResponse {
-  string id = 1;
-}
-
-message ProceedOrderRequest {
-  string id = 1;
+message BeginOrderRequest {
+  string productId = 1;
   int32 quantity = 2;
 }
 
-message ProceedOrderResponse {
-  string id = 1;
-  int32 quantity = 2;
+message BeginOrderResponse {
+  string transactionId = 1;
+}
+
+message ApplyOrderRequest {
+  bool success = 1;
+  string transactionId = 2;
+}
+
+message ApplyOrderResponse {
+  bool success = 1;
 }

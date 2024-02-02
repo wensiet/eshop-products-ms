@@ -25,9 +25,8 @@ type ProductServClient interface {
 	GetProduct(ctx context.Context, in *GetProductRequest, opts ...grpc.CallOption) (*Product, error)
 	GetProducts(ctx context.Context, in *GetProductsRequest, opts ...grpc.CallOption) (*GetProductsResponse, error)
 	CreateProduct(ctx context.Context, in *CreateProductRequest, opts ...grpc.CallOption) (*CreateProductResponse, error)
-	UpdateProduct(ctx context.Context, in *UpdateProductRequest, opts ...grpc.CallOption) (*Product, error)
-	DeleteProduct(ctx context.Context, in *DeleteProductRequest, opts ...grpc.CallOption) (*DeleteProductResponse, error)
-	ProceedOrder(ctx context.Context, in *ProceedOrderRequest, opts ...grpc.CallOption) (*ProceedOrderResponse, error)
+	BeginOrder(ctx context.Context, in *BeginOrderRequest, opts ...grpc.CallOption) (*BeginOrderResponse, error)
+	ApplyOrder(ctx context.Context, in *ApplyOrderRequest, opts ...grpc.CallOption) (*ApplyOrderResponse, error)
 }
 
 type productServClient struct {
@@ -65,27 +64,18 @@ func (c *productServClient) CreateProduct(ctx context.Context, in *CreateProduct
 	return out, nil
 }
 
-func (c *productServClient) UpdateProduct(ctx context.Context, in *UpdateProductRequest, opts ...grpc.CallOption) (*Product, error) {
-	out := new(Product)
-	err := c.cc.Invoke(ctx, "/product.ProductServ/UpdateProduct", in, out, opts...)
+func (c *productServClient) BeginOrder(ctx context.Context, in *BeginOrderRequest, opts ...grpc.CallOption) (*BeginOrderResponse, error) {
+	out := new(BeginOrderResponse)
+	err := c.cc.Invoke(ctx, "/product.ProductServ/BeginOrder", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *productServClient) DeleteProduct(ctx context.Context, in *DeleteProductRequest, opts ...grpc.CallOption) (*DeleteProductResponse, error) {
-	out := new(DeleteProductResponse)
-	err := c.cc.Invoke(ctx, "/product.ProductServ/DeleteProduct", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *productServClient) ProceedOrder(ctx context.Context, in *ProceedOrderRequest, opts ...grpc.CallOption) (*ProceedOrderResponse, error) {
-	out := new(ProceedOrderResponse)
-	err := c.cc.Invoke(ctx, "/product.ProductServ/ProceedOrder", in, out, opts...)
+func (c *productServClient) ApplyOrder(ctx context.Context, in *ApplyOrderRequest, opts ...grpc.CallOption) (*ApplyOrderResponse, error) {
+	out := new(ApplyOrderResponse)
+	err := c.cc.Invoke(ctx, "/product.ProductServ/ApplyOrder", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -99,9 +89,8 @@ type ProductServServer interface {
 	GetProduct(context.Context, *GetProductRequest) (*Product, error)
 	GetProducts(context.Context, *GetProductsRequest) (*GetProductsResponse, error)
 	CreateProduct(context.Context, *CreateProductRequest) (*CreateProductResponse, error)
-	UpdateProduct(context.Context, *UpdateProductRequest) (*Product, error)
-	DeleteProduct(context.Context, *DeleteProductRequest) (*DeleteProductResponse, error)
-	ProceedOrder(context.Context, *ProceedOrderRequest) (*ProceedOrderResponse, error)
+	BeginOrder(context.Context, *BeginOrderRequest) (*BeginOrderResponse, error)
+	ApplyOrder(context.Context, *ApplyOrderRequest) (*ApplyOrderResponse, error)
 	mustEmbedUnimplementedProductServServer()
 }
 
@@ -118,14 +107,11 @@ func (UnimplementedProductServServer) GetProducts(context.Context, *GetProductsR
 func (UnimplementedProductServServer) CreateProduct(context.Context, *CreateProductRequest) (*CreateProductResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateProduct not implemented")
 }
-func (UnimplementedProductServServer) UpdateProduct(context.Context, *UpdateProductRequest) (*Product, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateProduct not implemented")
+func (UnimplementedProductServServer) BeginOrder(context.Context, *BeginOrderRequest) (*BeginOrderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BeginOrder not implemented")
 }
-func (UnimplementedProductServServer) DeleteProduct(context.Context, *DeleteProductRequest) (*DeleteProductResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteProduct not implemented")
-}
-func (UnimplementedProductServServer) ProceedOrder(context.Context, *ProceedOrderRequest) (*ProceedOrderResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ProceedOrder not implemented")
+func (UnimplementedProductServServer) ApplyOrder(context.Context, *ApplyOrderRequest) (*ApplyOrderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ApplyOrder not implemented")
 }
 func (UnimplementedProductServServer) mustEmbedUnimplementedProductServServer() {}
 
@@ -194,56 +180,38 @@ func _ProductServ_CreateProduct_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ProductServ_UpdateProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateProductRequest)
+func _ProductServ_BeginOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BeginOrderRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProductServServer).UpdateProduct(ctx, in)
+		return srv.(ProductServServer).BeginOrder(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/product.ProductServ/UpdateProduct",
+		FullMethod: "/product.ProductServ/BeginOrder",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductServServer).UpdateProduct(ctx, req.(*UpdateProductRequest))
+		return srv.(ProductServServer).BeginOrder(ctx, req.(*BeginOrderRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ProductServ_DeleteProduct_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DeleteProductRequest)
+func _ProductServ_ApplyOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ApplyOrderRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ProductServServer).DeleteProduct(ctx, in)
+		return srv.(ProductServServer).ApplyOrder(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/product.ProductServ/DeleteProduct",
+		FullMethod: "/product.ProductServ/ApplyOrder",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductServServer).DeleteProduct(ctx, req.(*DeleteProductRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _ProductServ_ProceedOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ProceedOrderRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ProductServServer).ProceedOrder(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/product.ProductServ/ProceedOrder",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ProductServServer).ProceedOrder(ctx, req.(*ProceedOrderRequest))
+		return srv.(ProductServServer).ApplyOrder(ctx, req.(*ApplyOrderRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -268,16 +236,12 @@ var ProductServ_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ProductServ_CreateProduct_Handler,
 		},
 		{
-			MethodName: "UpdateProduct",
-			Handler:    _ProductServ_UpdateProduct_Handler,
+			MethodName: "BeginOrder",
+			Handler:    _ProductServ_BeginOrder_Handler,
 		},
 		{
-			MethodName: "DeleteProduct",
-			Handler:    _ProductServ_DeleteProduct_Handler,
-		},
-		{
-			MethodName: "ProceedOrder",
-			Handler:    _ProductServ_ProceedOrder_Handler,
+			MethodName: "ApplyOrder",
+			Handler:    _ProductServ_ApplyOrder_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

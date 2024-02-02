@@ -7,13 +7,16 @@ import (
 	"fmt"
 	"github.com/getsentry/sentry-go"
 	"log/slog"
+	"time"
 )
 
 type ProductStorage interface {
 	SaveProduct(title string, price float64, quantity int, description string) (uint, error)
 	Product(id string) (models.Product, error)
 	ManyProducts(limit, offset int) ([]models.Product, error)
-	UpdateProduct(product models.Product) error
+	UpdateProduct(product *models.Product) error
+	BeginProductUpdateTransaction(product *models.Product) (string, time.Time, error)
+	EndProductUpdateTransaction(transactionID string, status bool) error
 }
 
 func (p Product) CreateProduct(title string, price float64, quantity int, description string) (uint, error) {
@@ -77,6 +80,12 @@ func (p Product) GetProductsWithPaging(page int, pageSize ...int) ([]models.Prod
 	transaction := sentry.StartTransaction(context.Background(), op)
 	defer transaction.Finish()
 
+	log := p.log.With(
+		slog.String("op", op),
+	)
+
+	log.Info("getting products")
+
 	const defaultPageSize = 10
 
 	var pSize int
@@ -90,11 +99,6 @@ func (p Product) GetProductsWithPaging(page int, pageSize ...int) ([]models.Prod
 		}
 	}
 
-	log := p.log.With(
-		slog.String("op", op),
-	)
-
-	log.Info("getting products")
 	products, err := p.productStorage.ManyProducts(pSize, (page-1)*pSize)
 	if err != nil {
 		appError.LogIfNotApp(err, p.log)
@@ -103,30 +107,56 @@ func (p Product) GetProductsWithPaging(page int, pageSize ...int) ([]models.Prod
 	return products, nil
 }
 
-func (p Product) ProceedOrder(productID string, quantity int32) error {
-	const op = "productService.Product.ProceedOrder"
+func (p Product) BeginTransaction(productID string, quantity int32) (string, error) {
+	const op = "productService.Product.BeginTransaction"
 
 	transaction := sentry.StartTransaction(context.Background(), op)
 	defer transaction.Finish()
 
+	log := p.log.With("op", op)
+
+	log.Info(fmt.Sprintf("begin order transaction, productID: %s, quantity: %d", productID, quantity))
+
 	product, err := p.productStorage.Product(productID)
 	if err != nil {
 		appError.LogIfNotApp(err, p.log)
-		return fmt.Errorf("%s: %w", op, err)
+		return "", fmt.Errorf("%s: %w", op, err)
 	}
 
 	newQuantity := product.Quantity - int(quantity)
 	if newQuantity < 0 {
-		return fmt.Errorf("%s: %w", op, appError.NotEnoughProducts)
+		return "", fmt.Errorf("%s: %w", op, appError.NotEnoughProducts)
 	}
 
 	product.Quantity = newQuantity
 
-	err = p.productStorage.UpdateProduct(product)
+	trID, expiration, err := p.productStorage.BeginProductUpdateTransaction(&product)
 	if err != nil {
 		appError.LogIfNotApp(err, p.log)
-		return fmt.Errorf("%s: %w", op, err)
+		return "", fmt.Errorf("%s: %w", op, err)
 	}
+
+	log.With("transactionID", trID).With("expires", expiration).Info("transaction created")
+
+	return trID, nil
+}
+
+func (p Product) ApplyTransaction(trID string, success bool) error {
+	const op = "productService.Product.ApplyTransaction"
+
+	transaction := sentry.StartTransaction(context.Background(), op)
+	defer transaction.Finish()
+
+	log := p.log.With("op", op)
+
+	err := p.productStorage.EndProductUpdateTransaction(trID, success)
+	if err != nil {
+		log.With("transactionID", trID).Error("failed to apply transaction")
+		appError.LogIfNotApp(err, p.log)
+		return err
+	}
+
+	log.With("transactionID", trID).With("success", success).Info("transaction applied")
 
 	return nil
 }

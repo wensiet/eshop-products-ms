@@ -33,6 +33,9 @@ func New(log *slog.Logger, productsServ productService.Product, usersServ userSe
 		logging.WithLogOnEvents(
 			logging.PayloadReceived, logging.PayloadSent,
 		),
+		logging.WithLevels(func(code codes.Code) logging.Level {
+			return logging.LevelDebug
+		}),
 	}
 
 	recoveryOpts := []recovery.Option{

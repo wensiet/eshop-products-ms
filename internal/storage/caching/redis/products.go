@@ -8,7 +8,7 @@ import (
 )
 
 func (r Redis) CacheProduct(product models.Product) error {
-	const ttl = time.Hour
+	const ttl = time.Minute * 5
 	return r.client.Set(fmt.Sprintf("product:%d", product.ID), product, ttl).Err()
 }
 

@@ -67,27 +67,26 @@ func (s *productsAPI) CreateProduct(ctx context.Context, in *productv1.CreatePro
 	}, nil
 }
 
-func (s *productsAPI) UpdateProduct(ctx context.Context, in *productv1.UpdateProductRequest) (*productv1.Product, error) {
-	return nil, nil
-}
-
-func (s *productsAPI) DeleteProduct(ctx context.Context, in *productv1.DeleteProductRequest) (*productv1.DeleteProductResponse, error) {
-	return nil, nil
-}
-
-func (s *productsAPI) ProceedOrder(ctx context.Context, in *productv1.ProceedOrderRequest) (*productv1.ProceedOrderResponse, error) {
-	err := s.productService.ProceedOrder(in.Id, in.Quantity)
+func (s *productsAPI) BeginOrder(ctx context.Context, in *productv1.BeginOrderRequest) (*productv1.BeginOrderResponse, error) {
+	transactionID, err := s.productService.BeginTransaction(in.ProductId, in.Quantity)
 	if err != nil {
 		if errors.Is(err, appError.ProductNotFound) {
 			return nil, status.Error(codes.NotFound, "product not found")
 		}
 		if errors.Is(err, appError.NotEnoughProducts) {
-			return nil, status.Error(codes.InvalidArgument, "not enough quantity")
+			return nil, status.Error(codes.InvalidArgument, "not enough products")
 		}
 		return nil, status.Error(codes.Internal, "internal error occurred")
 	}
-	return &productv1.ProceedOrderResponse{
-		Id:       in.Id,
-		Quantity: in.Quantity,
+	return &productv1.BeginOrderResponse{
+		TransactionId: transactionID,
 	}, nil
+}
+
+func (s *productsAPI) ApplyOrder(ctx context.Context, in *productv1.ApplyOrderRequest) (*productv1.ApplyOrderResponse, error) {
+	err := s.productService.ApplyTransaction(in.TransactionId, in.Success)
+	if err != nil {
+		return &productv1.ApplyOrderResponse{Success: false}, status.Error(codes.Internal, "internal error occurred")
+	}
+	return &productv1.ApplyOrderResponse{Success: true}, nil
 }

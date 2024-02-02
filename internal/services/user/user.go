@@ -57,7 +57,9 @@ func (u User) DecodeJWT(JWT string) (models.User, error) {
 				}
 				return user, nil
 			}
+			return models.User{}, fmt.Errorf("%s: %w", op, err)
 		}
+		return user, nil
 	}
 	return models.User{}, fmt.Errorf("%s: %w", op, appError.InvalidToken)
 }
