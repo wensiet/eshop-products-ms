@@ -20,6 +20,8 @@ lint-test-job:
 build-job:
   image: docker:latest
   stage: build
+  services:
+    - docker:dind
   script:
     - echo "$CI_JOB_TOKEN" | docker login -u "$CI_REGISTRY_USER" --password-stdin registry.gitlab.com
     - docker build -t registry.gitlab.com/e-com-shop/backend/eshop-products-ms .
