@@ -6,15 +6,13 @@ lint-test-job:
   stage: test
   image: golang:1.21.6
   cache:
-    key: ${CI_COMMIT_REF_SLUG}-go-modules
     paths:
-      - go.mod
-      - go.sum
-      - ${GOPATH}/pkg/mod
-  before_script:
-    - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.55.2
+      - .cache
   script:
     - go mod download
+    - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.55.2
+    - mkdir -p .cache
+    - export GOPATH="$CI_PROJECT_DIR/.cache"
     - golangci-lint run --timeout=600s
     - echo "Linting finished."
 
