@@ -9,12 +9,12 @@ lint-test-job:
     paths:
       - .cache
   script:
-    - go mod download
     - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.55.2
+    - ls
+    - go mod download
     - mkdir -p .cache
     - export GOPATH="$CI_PROJECT_DIR/.cache"
-    - golangci-lint run --timeout=600s
-    - echo "Linting finished."
+    - golangci-lint run
 
 
 build-job:
