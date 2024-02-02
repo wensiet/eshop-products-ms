@@ -1,6 +1,6 @@
 env: local
 database:
-  host: postgres
+  host: 213.226.125.222
   port: 5432
   user: user
   pass: pass
@@ -11,7 +11,7 @@ jwt:
 grpc:
   port: 9090
 redis:
-  host: redis
+  host: 213.226.125.222
   port: 6379
   pass: pass
   db: 0
@@ -19,7 +19,7 @@ loki:
   host: loki
   port: 3100
 minio:
-  host: minio
+  host: 213.226.125.222
   port: 9000
   access_key: username
   secret_key: password
