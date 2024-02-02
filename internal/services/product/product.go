@@ -22,14 +22,14 @@ type ProductStorage interface {
 func (p Product) CreateProduct(title string, price float64, quantity int, description string) (uint, error) {
 	const op = "productService.Product.CreateProduct"
 
-	transaction := sentry.StartTransaction(context.Background(), op)
-	defer transaction.Finish()
-
 	log := p.log.With(
 		slog.String("op", op),
 	)
 
 	log.Info("creating product")
+
+	transaction := sentry.StartTransaction(context.Background(), op)
+	defer transaction.Finish()
 
 	if title == "" {
 		return 0, fmt.Errorf("%s: %w", op, appError.InvalidTitle)
@@ -55,14 +55,14 @@ func (p Product) CreateProduct(title string, price float64, quantity int, descri
 func (p Product) GetProductByID(id string) (models.Product, error) {
 	const op = "productService.Product.GetProductByID"
 
-	transaction := sentry.StartTransaction(context.Background(), op)
-	defer transaction.Finish()
-
 	log := p.log.With(
 		slog.String("op", op),
 	)
 
 	log.Info("getting product")
+
+	transaction := sentry.StartTransaction(context.Background(), op)
+	defer transaction.Finish()
 
 	product, err := p.productStorage.Product(id)
 	if err != nil {
