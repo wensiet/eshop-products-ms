@@ -17,10 +17,11 @@ stages:
 
 
 build-job:
-  image: docker:latest
+  image: docker:20.10.17-dind
   stage: build
   services:
-    - docker:dind
+  - name: docker:20.10.17-dind
+    alias: docker
   script:
     - docker info
     - docker login $CI_REGISTRY -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
