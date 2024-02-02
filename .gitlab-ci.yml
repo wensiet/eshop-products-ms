@@ -13,6 +13,7 @@ lint-test-job:
     - echo "Linting finished."
 
 build-job:
+  image: docker:latest
   stage: build
   script:
     - docker login registry.gitlab.com
