@@ -1,0 +1,18 @@
+stages:  
+  - test
+  - build
+
+lint-test-job:
+  stage: test
+  image: golangci/golangci-lint:v1.55.2
+  script:
+    - echo "Started linting."
+    - golangci-lint run
+    - echo "Linting finished"
+
+build-job:
+  stage: build
+  script:
+    - docker login registry.gitlab.com
+    - docker build -t registry.gitlab.com/e-com-shop/backend/eshop-products-ms .
+    - docker push registry.gitlab.com/e-com-shop/backend/eshop-products-ms
