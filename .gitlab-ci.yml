@@ -4,9 +4,9 @@ stages:
 
 lint-test-job:
   stage: test
-  image: golangci/golangci-lint:latest
+  image: golang:alpine
   script:
-    - echo "Started linting."
+    - go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.55.2
     - golangci-lint run
     - echo "Linting finished."
 
