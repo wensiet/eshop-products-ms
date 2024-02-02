@@ -3,6 +3,8 @@ stages:
   - build
 
 lint-test-job:
+  tags:
+    - runner
   stage: test
   image: golangci/golangci-lint:latest
   script:
@@ -11,6 +13,8 @@ lint-test-job:
     - echo "Linting finished"
 
 build-job:
+  tags:
+    - runner
   stage: build
   script:
     - docker login registry.gitlab.com
