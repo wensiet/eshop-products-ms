@@ -4,7 +4,7 @@ stages:
 
 lint-test-job:
   stage: test
-  image: golang:alpine
+  image: golang:1.21.6
   before_script:
     - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.55.2golangci-lint --version
   script:
