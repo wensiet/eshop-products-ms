@@ -17,7 +17,6 @@ stages:
 
 
 build-job:
-  image: docker:latest
   stage: build
   services:
     - docker:dind
