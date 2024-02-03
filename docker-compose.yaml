@@ -1,16 +1,16 @@
 version: '3'
 services:
-#  products-ms:
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    ports:
-#      - "9090:9090"
-#    depends_on:
-#      - postgres
-#      - redis
-#    networks:
-#      - eshop
+  products-ms:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "9090:9090"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - eshop
   postgres:
     image: postgres:latest
     environment:

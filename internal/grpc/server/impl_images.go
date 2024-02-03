@@ -10,7 +10,7 @@ import (
 )
 
 func (s *productsAPI) UploadImage(ctx context.Context, in *imagesv1.UploadImageRequest) (*imagesv1.Empty, error) {
-	_, err := s.productService.AddImage(in.Image, in.Name, in.ProductId)
+	_, err := s.productService.AddImage(ctx, in.Image, in.Name, in.ProductId)
 	if err != nil {
 		if errors.Is(err, appError.ProductNotFound) {
 			return nil, status.Error(codes.NotFound, "product with such id not found")

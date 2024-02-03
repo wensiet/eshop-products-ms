@@ -52,7 +52,7 @@ func (p Product) CreateProduct(title string, price float64, quantity int, descri
 	return productID, nil
 }
 
-func (p Product) GetProductByID(id string) (models.Product, error) {
+func (p Product) GetProductByID(ctx context.Context, id string) (models.Product, error) {
 	const op = "productService.Product.GetProductByID"
 
 	log := p.log.With(
@@ -61,7 +61,7 @@ func (p Product) GetProductByID(id string) (models.Product, error) {
 
 	log.Info("getting product")
 
-	transaction := sentry.StartTransaction(context.Background(), op)
+	transaction := sentry.StartTransaction(ctx, op)
 	defer transaction.Finish()
 
 	product, err := p.productStorage.Product(id)

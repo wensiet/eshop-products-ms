@@ -2,21 +2,21 @@ env: local
 grpc:
   port: 9090
 database:
-  host: localhost # DYNAMIC FIELD, now is: eshop-pg-service
+  host: eshop-pg-service # DYNAMIC FIELD, now is: eshop-pg-service
   port: 5432
   user: user
   pass: pass
   name: test
 redis:
-  host: localhost # DYNAMIC FIELD, now is: eshop-redis-service
+  host: eshop-redis-service # DYNAMIC FIELD, now is: eshop-redis-service
   port: 6379
   pass: pass
   db: 0
 loki:
-  host: localhost # DYNAMIC FIELD, now is: 213.226.125.222
+  host: 213.226.125.222 # DYNAMIC FIELD, now is: 213.226.125.222
   port: 3100
 minio:
-  host: localhost # DYNAMIC FIELD, now is: eshop-minio-service
+  host: eshop-minio-service # DYNAMIC FIELD, now is: eshop-minio-service
   port: 9000
   access_key: username
   secret_key: password

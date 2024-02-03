@@ -1,6 +1,7 @@
 package productService
 
 import (
+	"context"
 	appError "eshop-products-ms/internal/apperror"
 	models "eshop-products-ms/internal/models/product"
 	"fmt"
@@ -12,7 +13,7 @@ type ImageStorage interface {
 	Images(productID string) ([]models.Image, error)
 }
 
-func (p Product) AddImage(image []byte, imageName string, productID string) (string, error) {
+func (p Product) AddImage(ctx context.Context, image []byte, imageName string, productID string) (string, error) {
 	const op = "productService.Product.AddImage"
 
 	log := p.log.With(
@@ -21,7 +22,7 @@ func (p Product) AddImage(image []byte, imageName string, productID string) (str
 
 	log.Info("adding image")
 
-	product, err := p.GetProductByID(productID)
+	product, err := p.GetProductByID(ctx, productID)
 	if err != nil {
 		appError.LogIfNotApp(err, log)
 		return "", fmt.Errorf("%s: %w", op, err)

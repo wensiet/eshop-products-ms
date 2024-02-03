@@ -11,7 +11,7 @@ import (
 )
 
 func (s *productsAPI) GetProduct(ctx context.Context, in *productv1.GetProductRequest) (*productv1.Product, error) {
-	res, err := s.productService.GetProductByID(in.GetId())
+	res, err := s.productService.GetProductByID(ctx, in.GetId())
 	if err != nil {
 		if errors.Is(err, appError.ProductNotFound) {
 			return nil, status.Error(codes.NotFound, "product not found")
