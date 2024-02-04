@@ -7,8 +7,10 @@ variables:
 
 
 lint-test-job:
-  image: registry.gitlab.com/gitlab-org/gitlab-build-images:golangci-lint-alpine
+  image: golang:alpine
   stage: test
+  before_script:
+    - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.55.2
   cache:
     paths:
       - $GOPATH/pkg/mod
