@@ -12,14 +12,13 @@ lint-test-job:
   before_script:
     - apk add curl
     - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.55.2
-  cache:
+  script:
+    - go mod tidy
+    - golangci-lint run --timeout=300s
+  artifacts:
     paths:
       - $GOPATH/pkg/mod
       - go.sum
-  script:
-    - ls -a $GOPATH/pkg/mod
-    - go mod tidy
-    - golangci-lint run --timeout=300s
 
 
 
