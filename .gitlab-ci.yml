@@ -5,17 +5,18 @@ stages:
 variables:
   IMAGE_NAME: "registry.gitlab.com/e-com-shop/backend/eshop-products-ms"
 
+
 lint-test-job:
   image: registry.gitlab.com/gitlab-org/gitlab-build-images:golangci-lint-alpine
   stage: test
   cache:
-    key: ${CI_COMMIT_REF_SLUG}-golangci-lint
     paths:
-      - go.mod
+      - $GOPATH/pkg/mod
       - go.sum
   script:
-    - go mod download
+    - go mod tidy
     - golangci-lint run
+
 
 
 
