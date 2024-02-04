@@ -10,14 +10,10 @@ lint-test-job:
   image: golang:alpine
   stage: test
   before_script:
-    - go mod tidy
+    - go get -u golang.org/x/lint/golint
     - go install golang.org/x/lint/golint
   script:
     - golint 
-  artifacts:
-    paths:
-      - $GOPATH/pkg/mod
-      - go.sum
 
 
 
