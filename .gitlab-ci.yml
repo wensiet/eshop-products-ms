@@ -8,8 +8,14 @@ variables:
 lint-test-job:
   image: registry.gitlab.com/gitlab-org/gitlab-build-images:golangci-lint-alpine
   stage: test
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}-golangci-lint
+    paths:
+      - go.mod
+      - go.sum
   script:
-    - golangci-lint run --issues-exit-code 0
+    - go mod download
+    - golangci-lint run
 
 
 
