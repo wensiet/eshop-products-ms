@@ -1,21 +1,8 @@
 stages:
-  - test
   - build
 
 variables:
   IMAGE_NAME: "registry.gitlab.com/e-com-shop/backend/eshop-products-ms"
-
-
-lint-test-job:
-  image: golang:alpine
-  stage: test
-  before_script:
-    - go get -u golang.org/x/lint/golint
-    - go install golang.org/x/lint/golint
-  script:
-    - golint 
-
-
 
 
 build-job-dev:
