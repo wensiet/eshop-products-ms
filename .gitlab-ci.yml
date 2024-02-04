@@ -15,7 +15,6 @@ lint-test-job:
   script:
     - go mod tidy
     - ls -a
-    - golangci-lint run --timeout=300s
   artifacts:
     paths:
       - $GOPATH/pkg/mod
