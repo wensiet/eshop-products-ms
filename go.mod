@@ -1,6 +1,6 @@
 module eshop-products-ms
 
-go 1.21.6
+go 1.21
 
 require (
 	github.com/getsentry/sentry-go v0.26.0
@@ -11,7 +11,7 @@ require (
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/minio/minio-go/v7 v7.0.66
 	github.com/stretchr/testify v1.8.4
-	github.com/wensiet/logmod v0.0.0-20240203130235-d69541fb861c
+	github.com/wensiet/logmod v1.0.0
 	google.golang.org/grpc v1.61.0
 	google.golang.org/protobuf v1.32.0
 	gorm.io/driver/postgres v1.5.4
