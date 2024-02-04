@@ -14,6 +14,7 @@ lint-test-job:
     - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.55.2
   script:
     - go mod tidy
+    - ls -a
     - golangci-lint run --timeout=300s
   artifacts:
     paths:
