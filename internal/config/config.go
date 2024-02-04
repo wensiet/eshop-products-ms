@@ -2,7 +2,6 @@ package config
 
 import (
 	"github.com/ilyakaznacheev/cleanenv"
-	"github.com/wensiet/logmod"
 	"log/slog"
 	"os"
 	"sync"
@@ -71,15 +70,9 @@ func Get() Config {
 
 func GetLogger() *slog.Logger {
 	conf := Get()
-	return logmod.New(logmod.Options{
-		Env:     conf.Env,
-		Service: "eshop-products-ms",
-		Loki: struct {
-			Host string
-			Port int
-		}{
-			Host: conf.Loki.Host,
-			Port: conf.Loki.Port,
-		},
-	})
+
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}))
+	logger = logger.With("service", "eshop-products-ms").With("env", conf.Env)
+
+	return logger
 }
