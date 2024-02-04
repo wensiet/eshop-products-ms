@@ -17,6 +17,7 @@ lint-test-job:
       - $GOPATH/pkg/mod
       - go.sum
   script:
+    - ls -a $GOPATH/pkg/mod
     - go mod tidy
     - golangci-lint run --timeout=300s
 
