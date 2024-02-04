@@ -1,4 +1,4 @@
-# Makefile
+#Makefile
 
 # Specify the path to the proto file
 PROTO_PRODUCTS = proto/products/products.proto
